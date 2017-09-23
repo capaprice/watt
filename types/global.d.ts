@@ -26,3 +26,5 @@ declare module '*.css' {
 declare interface Window {
   __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?(): (args?: any) => any;
 }
+
+declare type Nullable<T> = T | null;

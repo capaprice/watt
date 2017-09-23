@@ -16,10 +16,10 @@
 
 import * as React from 'react';
 
+import { Terminal } from '../../components/Terminal';
+
 export default class App extends React.Component {
   public render() {
-    return (
-      <div>Hello, World!</div>
-    );
+    return <Terminal />;
   }
 }

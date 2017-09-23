@@ -97,6 +97,8 @@ module.exports = {
     ],
   },
   plugins: [
+    // Ignore *.js.map in xterm.js.
+    new webpack.IgnorePlugin(/^\.\/.*js.map$/ ,/.*xterm\/lib\/addons/),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
       filename: 'vendor.bundle.js',

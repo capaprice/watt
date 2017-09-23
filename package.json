@@ -59,7 +59,8 @@
     "react-router": "^4.2.0",
     "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
-    "sanitize.css": "^5.0.0"
+    "sanitize.css": "^5.0.0",
+    "xterm": "file:xterm-313d1e6.tgz"
   },
   "pre-commit": [
     "lint"
