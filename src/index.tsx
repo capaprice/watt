@@ -17,6 +17,9 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
+// Import sanitize.css to have reasonable default CSS styles.
+import 'sanitize.css/sanitize.css';
+
 import { createBrowserHistory } from 'history';
 import { Provider } from 'react-redux';
 import {
