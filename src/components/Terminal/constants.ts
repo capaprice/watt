@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-import logger from './logger';
-import writeTerminal from './writeTerminal';
-
-export {
-  logger,
-  writeTerminal,
-};
+export const WRITE_DATA = 'components/Terminal/WRITE_DATA';

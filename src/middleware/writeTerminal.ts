@@ -14,10 +14,27 @@
  * limitations under the License.
  */
 
-import logger from './logger';
-import writeTerminal from './writeTerminal';
+import {
+  Dispatch,
+  Middleware,
+  MiddlewareAPI,
+} from 'redux';
 
-export {
-  logger,
-  writeTerminal,
-};
+import terminalManager from '../lib/TerminalManager';
+
+import { WRITE_DATA } from '../components/Terminal';
+
+const writeTerminalMiddleware: Middleware =
+  <S>({getState}: MiddlewareAPI<S>) =>
+    (next: Dispatch<S>) =>
+      (action: any) => {
+        if (action.type === WRITE_DATA) {
+          const term = terminalManager.getTerminal(action.payload.termName);
+          if (term) {
+            term.write(action.payload.data);
+          }
+        }
+        return next(action);
+      };
+
+export default writeTerminalMiddleware;

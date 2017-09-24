@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import logger from './logger';
-import writeTerminal from './writeTerminal';
+import { createAction } from 'redux-actions';
 
-export {
-  logger,
-  writeTerminal,
-};
+import { WRITE_DATA } from './constants';
+
+declare interface ITerminalDataPacket {
+  termName: string;
+  data: string;
+}
+
+export const writeData = createAction<ITerminalDataPacket>(WRITE_DATA);

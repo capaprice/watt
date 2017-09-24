@@ -15,11 +15,42 @@
  */
 
 import * as React from 'react';
+import { connect } from 'react-redux';
+import { RouteComponentProps } from 'react-router';
+import {
+  bindActionCreators,
+  Dispatch,
+} from 'redux';
+import { v4 as uuid } from 'uuid';
 
-import { Terminal } from '../../components/Terminal';
+import {
+  Terminal,
+  writeData as writeTerminalData,
+} from '../../components/Terminal';
 
-export default class App extends React.Component {
+declare interface IAppProps extends RouteComponentProps<void> {
+  writeTerminalData: typeof writeTerminalData;
+}
+
+class App extends React.Component<IAppProps, any> {
+  private _termName = uuid();
+
+  public componentDidMount() {
+    this.props.writeTerminalData({
+      termName: this._termName,
+      data: 'Hello, World!',
+    });
+  }
+
   public render() {
-    return <Terminal />;
+    return <Terminal termName={this._termName} />;
   }
 }
+
+function mapDispatchToProps<S>(dispatch: Dispatch<S>) {
+  return {
+    writeTerminalData: bindActionCreators(writeTerminalData, dispatch),
+  };
+}
+
+export default connect(null, mapDispatchToProps)(App);

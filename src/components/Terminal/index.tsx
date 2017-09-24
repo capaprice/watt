@@ -16,12 +16,18 @@
 
 import * as React from 'react';
 
+import terminalManager from '../../lib/TerminalManager';
+
 import { Terminal as XTerm } from 'xterm';
 
 // Load xterm.css and skip CSS module.
 import '!style-loader!css-loader!xterm/lib/xterm.css';
 
 export interface ITerminalProps {
+  // This is an unique name that can be used to uniquely identify the xterm's Terminal among others.
+  // After the Terminal component gets mounted, you can find the xterm's Terminal object with this
+  // name from TerminalManager.
+  termName: string;
   // Focus the terminal after it gets instantiated in the DOM. (default: true)
   focus?: boolean;
   // Set the width (default: 100vw) and height (default: 100vh) of the terminal.
@@ -45,11 +51,12 @@ export class Terminal extends React.Component<ITerminalProps, {}> {
   }
 
   public componentDidMount() {
-    const { cursorBlink = true, focus = true } = this.props;
+    const { cursorBlink = true, focus = true, termName } = this.props;
     this._term = new XTerm({
       cursorBlink,
       ...this.guessInitialGeometry(),
     });
+    this._term.setOption('termName', termName);
     // Bind term instance with the container.
     this._term.open(this.refs.container);
     if (focus) {
@@ -58,11 +65,14 @@ export class Terminal extends React.Component<ITerminalProps, {}> {
 
     // This will resize the terminal to fit the container size.
     (this._term as any).fit();
-    this._term.write('Hello, World!');
+
+    // Register this._terminal.
+    terminalManager.registerTerminal(this._term);
   }
 
   public componentWillUnmount() {
     if (this._term) {
+      terminalManager.unregisterTerminal(this._term);
       this._term.destroy();
       this._term = null;
     }
@@ -86,3 +96,6 @@ export class Terminal extends React.Component<ITerminalProps, {}> {
     };
   }
 }
+
+export * from './constants';
+export * from './actions';

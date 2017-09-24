@@ -24,13 +24,19 @@ import {
 import rootReducer from './reducers';
 import IRootState from './state';
 
-import { logger as loggerMiddleware } from '../middleware';
+import {
+  logger as loggerMiddleware,
+  writeTerminal as writeTerminalMiddleware,
+} from '../middleware';
 
 export function configureStore(initialState?: IRootState): Store<IRootState> {
   const isProduction = (process.env.NODE_ENV === 'production');
 
   // Create the store with the following middlewares:
+  //
+  //  - writeTerminalMiddleware: Write data to Terminal component
   const middlewares = [
+    writeTerminalMiddleware,
   ];
 
   // Append logger middelware to emit every action sent to store.
