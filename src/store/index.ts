@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import createSagaMiddleware from 'redux-saga';
+
 import {
   applyMiddleware,
   compose,
@@ -22,6 +24,7 @@ import {
 } from 'redux';
 
 import rootReducer from './reducers';
+import rootSaga from './sagas';
 import IRootState from './state';
 
 import {
@@ -31,11 +34,14 @@ import {
 
 export function configureStore(initialState?: IRootState): Store<IRootState> {
   const isProduction = (process.env.NODE_ENV === 'production');
+  const sagaMiddleware = createSagaMiddleware();
 
   // Create the store with the following middlewares:
   //
+  //  - sagaMiddleware: Makes redux-sagas work
   //  - writeTerminalMiddleware: Write data to Terminal component
   const middlewares = [
+    sagaMiddleware,
     writeTerminalMiddleware,
   ];
 
@@ -60,6 +66,9 @@ export function configureStore(initialState?: IRootState): Store<IRootState> {
     initialState,
     composeEnhancers(...enhancers),
   ) as Store<IRootState>;
+
+  // Start redux-saga.
+  sagaMiddleware.run(rootSaga);
 
   // Make reducers hot reloadable, see http://mxs.is/googmo.
   if (module.hot) {

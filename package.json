@@ -60,6 +60,7 @@
     "react-router": "^4.2.0",
     "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
+    "redux-saga": "^0.15.6",
     "sanitize.css": "^5.0.0",
     "uuid": "^3.1.0",
     "xterm": "file:xterm-313d1e6.tgz"
