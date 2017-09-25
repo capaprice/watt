@@ -23,6 +23,9 @@ import {
 } from 'redux';
 import { v4 as uuid } from 'uuid';
 
+import TelnetClient from '../../lib/TelnetClient';
+import terminalManager from '../../lib/TerminalManager';
+
 import {
   Terminal,
   writeData as writeTerminalData,
@@ -35,6 +38,7 @@ declare interface IAppProps extends RouteComponentProps<void> {
 }
 
 class App extends React.Component<IAppProps, any> {
+  private _telnetClient: TelnetClient = new TelnetClient();
   private _termName = uuid();
 
   public componentDidMount() {
@@ -47,7 +51,7 @@ class App extends React.Component<IAppProps, any> {
         onconnect: resolve,
         onerror: reject,
       });
-    }).then((ws) => this.writeTerminal('Succeeded!'))
+    }).then((ws: WebSocket) => this.attachTelnetClient(ws))
       .catch(() => this.writeTerminal('Failed'));
   }
 
@@ -60,6 +64,29 @@ class App extends React.Component<IAppProps, any> {
       termName: this._termName,
       data,
     });
+  }
+
+  private attachTelnetClient(ws: WebSocket) {
+    this.writeTerminal('Succeeded!');
+
+    const xterm = terminalManager.getTerminal(this._termName);
+    if (!xterm) {
+      return;
+    }
+
+    // Attach ...
+    this._telnetClient.attach(xterm, { write: (data) => ws.send(data) });
+
+    // Hand out data received from websocket to the telnet client.
+    ws.onmessage = (e: MessageEvent) => {
+      if (ws.binaryType === 'arraybuffer') {
+        ws.onmessage(e.data);
+      } else if (ws.binaryType === 'blob') {
+        const reader = new FileReader();
+        reader.onload = () => this._telnetClient.onmessage(reader.result);
+        reader.readAsArrayBuffer(e.data);
+      }
+    };
   }
 }
 
