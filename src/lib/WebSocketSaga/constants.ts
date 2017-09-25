@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-import { SagaIterator } from 'redux-saga';
-import { fork } from 'redux-saga/effects';
-
-import { websocketSaga } from '../lib/WebSocketSaga';
-
-export default function* rootSaga(): SagaIterator {
-  // tslint:disable:no-empty
-  yield fork(websocketSaga);
-}
+export const ESTABLISH_CONNECTION = 'lib/WebSocketSaga/ESTABLISH_CONNECTION';

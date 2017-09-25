@@ -27,8 +27,10 @@ import {
   Terminal,
   writeData as writeTerminalData,
 } from '../../components/Terminal';
+import { connect as connectWebSocket } from '../../lib/WebSocketSaga';
 
 declare interface IAppProps extends RouteComponentProps<void> {
+  connectWebSocket: typeof connectWebSocket;
   writeTerminalData: typeof writeTerminalData;
 }
 
@@ -36,19 +38,34 @@ class App extends React.Component<IAppProps, any> {
   private _termName = uuid();
 
   public componentDidMount() {
-    this.props.writeTerminalData({
-      termName: this._termName,
-      data: 'Hello, World!',
-    });
+    this.writeTerminal('Connecting to ptt.cc ... ');
+
+    new Promise((resolve, reject) => {
+      this.props.connectWebSocket({
+        url: 'wss://ws.ptt.cc/bbs',
+        protocols: ['telnet'],
+        onconnect: resolve,
+        onerror: reject,
+      });
+    }).then((ws) => this.writeTerminal('Succeeded!'))
+      .catch(() => this.writeTerminal('Failed'));
   }
 
   public render() {
     return <Terminal termName={this._termName} />;
   }
+
+  private writeTerminal(data: string) {
+    this.props.writeTerminalData({
+      termName: this._termName,
+      data,
+    });
+  }
 }
 
 function mapDispatchToProps<S>(dispatch: Dispatch<S>) {
   return {
+    connectWebSocket: bindActionCreators(connectWebSocket, dispatch),
     writeTerminalData: bindActionCreators(writeTerminalData, dispatch),
   };
 }
