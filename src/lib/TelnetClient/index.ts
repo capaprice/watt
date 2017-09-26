@@ -16,6 +16,8 @@
 
 import { Terminal as XTerm } from 'xterm';
 
+import { ITelnetServer } from './interfaces';
+
 // Constants defined by Telnet protocol (RFC854)
 const SE                = 240;
 const NOP               = 241;
@@ -76,10 +78,6 @@ class IACBuffer {
     this._size = 0;
     return ret;
   }
-}
-
-interface ITelnetServer {
-  write: (data: ArrayBuffer) => void;
 }
 
 // tslint:disable:max-classes-per-file

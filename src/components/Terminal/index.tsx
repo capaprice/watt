@@ -17,6 +17,7 @@
 import * as React from 'react';
 
 import terminalManager from '../../lib/TerminalManager';
+import injectEncodingTranslationRenderLayer from './injectEncodingTranslationRenderLayer';
 
 import { Terminal as XTerm } from 'xterm';
 
@@ -35,6 +36,8 @@ export interface ITerminalProps {
   width?: string;
   // Whether the terminal cursor blinks (default: true)
   cursorBlink?: boolean;
+  // Charset encoding of the contents written to the terminal
+  charset: string;
 }
 
 export class Terminal extends React.Component<ITerminalProps, {}> {
@@ -51,17 +54,21 @@ export class Terminal extends React.Component<ITerminalProps, {}> {
   }
 
   public componentDidMount() {
-    const { cursorBlink = true, focus = true, termName } = this.props;
+    const { charset, cursorBlink = true, focus = true, termName } = this.props;
     this._term = new XTerm({
       cursorBlink,
       ...this.guessInitialGeometry(),
     });
     this._term.setOption('termName', termName);
+
     // Bind term instance with the container.
     this._term.open(this.refs.container);
     if (focus) {
       this._term.focus();
     }
+
+    // Inject character encoding translation layer in rederer.
+    injectEncodingTranslationRenderLayer(this._term, charset);
 
     // This will resize the terminal to fit the container size.
     (this._term as any).fit();

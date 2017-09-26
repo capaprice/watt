@@ -56,7 +56,7 @@ class App extends React.Component<IAppProps, any> {
   }
 
   public render() {
-    return <Terminal termName={this._termName} />;
+    return <Terminal charset="big-5" termName={this._termName} />;
   }
 
   private writeTerminal(data: string) {
