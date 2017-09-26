@@ -16,6 +16,8 @@
 
 import { Terminal as XTerm } from 'xterm';
 
+import InputHandler from './InputHandler';
+
 import { ITelnetServer } from './interfaces';
 
 // Constants defined by Telnet protocol (RFC854)
@@ -89,6 +91,8 @@ export default class TelnetClient {
   private _xterm: XTerm;
   // The server to send back user inputs received from the terminal
   private _server: ITelnetServer;
+  // Handle inputs to the terminal.
+  private _inputHandler: InputHandler;
 
   constructor() {
     this._iacBuf = new IACBuffer();
@@ -98,6 +102,10 @@ export default class TelnetClient {
   public attach(xterm: XTerm, server: ITelnetServer) {
     this._xterm = xterm;
     this._server = server;
+
+    // Send user input received from terminal to the server.
+    this._inputHandler = new InputHandler(server, xterm);
+    this._xterm.on('key', (key: string, ev: KeyboardEvent) => this._inputHandler.handle(key, ev));
   }
 
   // Process data and apply changes on terminal.
