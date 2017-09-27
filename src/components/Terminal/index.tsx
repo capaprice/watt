@@ -34,6 +34,9 @@ export interface ITerminalProps {
   // Set the width (default: 100vw) and height (default: 100vh) of the terminal.
   height?: string;
   width?: string;
+  // Set how cursor looks like. Valid values are 'block', 'underline' and 'bar'. Default is
+  // 'underline'.
+  cursorStyle?: 'block' | 'underline' | 'bar';
   // Whether the terminal cursor blinks (default: true)
   cursorBlink?: boolean;
   // Charset encoding of the contents written to the terminal
@@ -54,9 +57,16 @@ export class Terminal extends React.Component<ITerminalProps, {}> {
   }
 
   public componentDidMount() {
-    const { charset, cursorBlink = true, focus = true, termName } = this.props;
+    const {
+      charset,
+      cursorBlink = true,
+      cursorStyle = 'underline',
+      focus = true,
+      termName,
+    } = this.props;
     this._term = new XTerm({
       cursorBlink,
+      cursorStyle,
       ...this.guessInitialGeometry(),
     });
     this._term.setOption('termName', termName);
