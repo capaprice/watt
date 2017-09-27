@@ -82,11 +82,13 @@ class EncodingTranslationRenderLayer extends BaseRenderLayer {
 
         if (ch1.charCodeAt(0) < 0x7f) {
           // Skip ASCII.
+          this._state.cache[x][y] = charData1;
           continue;
         }
 
         if ((x + 1) >= cols) {
           // Skip translation when there's no subsequent byte.
+          this._state.cache[x][y] = charData1;
           continue;
         }
 
@@ -110,21 +112,22 @@ class EncodingTranslationRenderLayer extends BaseRenderLayer {
           // This is a normal word. Render the character at the position of the lead byte.
           charData1[CHAR_DATA_CODE_INDEX] = u.charCodeAt(0);
           charData1[CHAR_DATA_CHAR_INDEX] = u;
-          charData1[CHAR_DATA_WIDTH_INDEX] = 2;
-          // Render the continuation byte to nothing.
-          charData2[CHAR_DATA_CODE_INDEX] = 0;
-          charData2[CHAR_DATA_CHAR_INDEX] = '';
-          charData2[CHAR_DATA_WIDTH_INDEX] = 0;
+          charData1[CHAR_DATA_WIDTH_INDEX] = 1;
+          // Render the continuation byte to a space.
+          charData2[CHAR_DATA_CODE_INDEX] = 32;
+          charData2[CHAR_DATA_CHAR_INDEX] = ' ';
+          charData2[CHAR_DATA_WIDTH_INDEX] = 1;
           if (charData1[CHAR_DATA_ATTR_INDEX] !== charData2[CHAR_DATA_ATTR_INDEX]) {
             // TODO: Support "two-color" word for wide character.
           }
           // Update cache.
           this._state.cache[x][y] = charData1;
           this._state.cache[x + 1][y] = charData2;
+
           // Skip the continuation byte.
           ++x;
         } else {
-          // Regard any non-single-codepoing result as invalid UTF-8 and skip the current byte.
+          // Regard any non-single-codepoint result as invalid UTF-8 and skip the current byte.
           // Still update cache to avoid revisiting it.
           this._state.cache[x][y] = charData1;
         }
@@ -143,7 +146,7 @@ export default function injectEncodingTranslationRenderLayer(terminal: XTerm, ch
     const renderer = (terminal as any).renderer;
     const layer = new EncodingTranslationRenderLayer(
       terminal.element,
-      0,
+      /* zIndex */-1,
       renderer.colorManager.colors,
       charset);
     renderer._renderLayers.unshift(layer);
